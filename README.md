@@ -1,210 +1,521 @@
-Got it ✅
-I’ll turn this into an **engaging, well-structured README** for your Advanced Circuit Simulator, keeping all the deep technical details but making it more **reader-friendly, feature-rich, and interesting**.
 
-Here’s the improved version:
+Advanced Circuit Simulator
+A Rigorous, High-Precision DC Circuit Analysis Tool using Modified Nodal Analysis (MNA)
 
----
 
-# ⚡ Advanced Circuit Simulator
+🎥 Watch Demo Video (coming soon)
 
-> **A mathematically rigorous and numerically stable DC circuit solver powered by Modified Nodal Analysis (MNA)**
+📌 Table of Contents
+Overview
 
----
+Key Features
 
-## 📜 Overview
+Mathematical Foundations
 
-The **Advanced Circuit Simulator** is a high-precision electrical analysis tool built on **Modified Nodal Analysis (MNA)** — the industry-standard approach for solving circuits with both current and voltage sources.
+Numerical Methods
 
-It takes **any linear DC circuit** (resistors, voltage sources, current sources, wires, ground) and computes:
+Workflow
 
-* ✅ **Node Voltages** (relative to ground)
-* ✅ **Currents** through each component
-* ✅ **Power Dissipation** per component
-* ✅ **Verification** of KCL, KVL, and power conservation
+Example Analysis
 
-It also includes **full mathematical derivations, numerical methods, and verification routines** — making it perfect for **both engineers and educators**.
+Verification & Validation
 
----
+Advanced Extensions
 
-## 🧮 Core Method: Modified Nodal Analysis (MNA)
+Future Roadmap
 
-Traditional nodal analysis struggles with voltage sources. **MNA** fixes this by:
+Demo Video
 
-* Adding **extra variables** for voltage source currents
-* Extending the KCL equations with voltage source constraints
+📖 Overview
+The Advanced Circuit Simulator is designed to perform accurate, stable, and verifiable DC circuit analysis using Modified Nodal Analysis (MNA).
+It’s not just a black-box solver — it’s an educational and professional tool that lets you:
 
-The **final MNA system** is:
+See the full equation system your circuit produces
 
-$$
-\begin{bmatrix}
-G & B \\
-B^T & 0
-\end{bmatrix}
-\begin{bmatrix}
-V \\ I
-\end{bmatrix}
+Understand matrix assembly from physical components
+
+Verify your results against KCL, KVL, and power conservation
+
+Extend to AC, nonlinear, and transient analyses
+
+🚀 Key Features
+🔍 Accurate MNA Implementation for DC steady-state analysis
+
+📐 Union-Find Node Detection for correct topology mapping
+
+⚙️ LU Decomposition with Partial Pivoting for stable solving
+
+📊 Post-Processing: per-component currents & power
+
+✅ Automatic Verification of physical conservation laws
+
+📈 Residual Norm & Condition Number reporting
+
+🔄 Ground Node Reduction for efficiency
+
+🛠 Educational Mode showing intermediate matrices
+
+📚 Mathematical Foundations
+Problem Setup
+Given a circuit with:
+
+𝑛
+n non-ground nodes
+
+𝑚
+m voltage sources
+
+The MNA formulation is:
+
+[
+𝐺
+𝐵
+𝐵
+𝑇
+0
+]
+[
+𝑉
+𝐼
+]
 =
-\begin{bmatrix}
-I_s \\ V_s
-\end{bmatrix}
-$$
-
+[
+𝐼
+𝑠
+𝑉
+𝑠
+]
+[ 
+G
+B 
+T
+ 
+​
+  
+B
+0
+​
+ ][ 
+V
+I
+​
+ ]=[ 
+I 
+s
+​
+ 
+V 
+s
+​
+ 
+​
+ ]
 Where:
 
-* **G**: Conductance matrix (resistors, etc.)
-* **B**: Voltage source incidence matrix
-* **V**: Node voltages
-* **I**: Voltage source currents
-* **I\_s**: Current source vector
-* **V\_s**: Voltage source values
+𝐺
+G: Conductance matrix (Ohm’s law contributions)
 
----
+𝐵
+B: Voltage source incidence matrix
 
-## 🔢 Numerical Method
+𝐼
+𝑠
+I 
+s
+​
+ : Current injection vector
 
-We solve the MNA system using **LU decomposition with partial pivoting**:
+𝑉
+𝑠
+V 
+s
+​
+ : Voltage source vector
 
-1. **Build** the MNA matrix & RHS vector
-2. **Reduce** system by removing the ground node
-3. **Factorize** $A = LU$ with **row pivoting** for stability
-4. **Forward substitution**: solve $Ly = b$
-5. **Backward substitution**: solve $Ux = y$
-6. **Reconstruct** full voltage/current solution
+Dimension: 
+(
+𝑛
++
+𝑚
+)
+×
+(
+𝑛
++
+𝑚
+)
+(n+m)×(n+m)
 
-**Advantages:**
+🔢 Numerical Methods
+The simulator is numerically robust thanks to careful preprocessing and solving strategies.
 
-* 🚀 **O(n³)** time for dense systems (can be optimized for sparse)
-* 🔒 Stable for ill-conditioned systems via pivoting
-* 📏 Accurate up to **double precision** floating-point limits
+1. Ground Node Reduction
+We select one node as reference (ground) and remove its row and column from the MNA system.
 
----
+Why?
 
-## 🛠 Features
+Ground voltage is fixed (
+𝑉
+𝑔
+=
+0
+V 
+g
+​
+ =0) → no need to solve for it
 
-### 📐 **Mathematical & Numerical Rigor**
+Reduces size from 
+(
+𝑛
++
+𝑚
+)
+(n+m) to 
+(
+𝑛
++
+𝑚
+−
+1
+)
+(n+m−1)
 
-* Full **Union-Find node identification** (O(α(n)) complexity)
-* **Exact MNA formulation** with resistor, current source, voltage source handling
-* Automatic **ground node elimination**
+Improves conditioning by removing a trivial equation
 
-### 📊 **Computation & Verification**
+2. LU Decomposition with Partial Pivoting
+We solve:
 
-* Node voltages & voltage source currents
-* Component currents & powers
-* **KCL, KVL, and power conservation checks**
-* Residual & condition number calculations for numerical accuracy
+𝐴
+𝑟
+𝑒
+𝑑
+⋅
+𝑥
+𝑟
+𝑒
+𝑑
+=
+𝑧
+𝑟
+𝑒
+𝑑
+A 
+red
+​
+ ⋅x 
+red
+​
+ =z 
+red
+​
+ 
+Using the factorization:
 
-### 💡 **Educational Mode**
+𝑃
+⋅
+𝐴
+𝑟
+𝑒
+𝑑
+=
+𝐿
+⋅
+𝑈
+P⋅A 
+red
+​
+ =L⋅U
+𝐿
+L: Lower triangular (1’s on diagonal)
 
-* Step-by-step derivation of the MNA system
-* Debug output for every matrix operation
-* Real example: **Voltage Divider** analysis with full math
+𝑈
+U: Upper triangular
 
-### 🚀 **Extendable Architecture**
+𝑃
+P: Row permutation matrix (from pivoting)
 
-* Ready for AC analysis (complex phasors)
-* Can be expanded to nonlinear components (diodes, BJTs)
-* Supports Monte Carlo tolerance analysis & sensitivity analysis
+Partial Pivoting:
 
----
+Finds the largest pivot element in the current column
 
-## 📚 Example: Voltage Divider
+Swaps rows to place it on the diagonal
 
-**Circuit:**
+Prevents division by small numbers
 
-```
- Vs (12V)
-  ┌───[R1=1kΩ]───[R2=2kΩ]───┐
-  │                         │
- GND                       GND
-```
+Reduces round-off error growth
 
-**Results:**
+Algorithm (Doolittle with Pivoting):
 
-| Component | Voltage (V) | Current (A) | Power (W) |
-| --------- | ----------- | ----------- | --------- |
-| Vs        | 12.0        | -0.004      | -0.048    |
-| R1        | 4.0         | 0.004       | 0.016     |
-| R2        | 8.0         | 0.004       | 0.032     |
+For column 
+𝑘
+k:
 
-**Verification:**
+𝑝
+=
+arg
+⁡
+max
+⁡
+𝑖
+≥
+𝑘
+∣
+𝐴
+[
+𝑖
+,
+𝑘
+]
+∣
+p=argmax 
+i≥k
+​
+ ∣A[i,k]∣
 
-* ✅ **KCL**: All node current sums ≈ 0
-* ✅ **KVL**: Loop sums ≈ 0
-* ✅ **Power**: Total supplied = Total dissipated
+Swap rows 
+𝑘
+k and 
+𝑝
+p in 
+𝐴
+A, update 
+𝑃
+P
 
----
+For rows 
+𝑖
+>
+𝑘
+i>k:
 
-## 🧪 Numerical Accuracy
+𝐿
+[
+𝑖
+,
+𝑘
+]
+=
+𝐴
+[
+𝑖
+,
+𝑘
+]
+𝐴
+[
+𝑘
+,
+𝑘
+]
+L[i,k]= 
+A[k,k]
+A[i,k]
+​
+ 
+Update:
 
-* **Residual norm** check: $\|Ax - b\| \approx 0$
-* **Condition number** calculation: warns for ill-conditioned systems
-* **Double precision** floating-point math
+𝐴
+[
+𝑖
+,
+𝑗
+]
+=
+𝐴
+[
+𝑖
+,
+𝑗
+]
+−
+𝐿
+[
+𝑖
+,
+𝑘
+]
+⋅
+𝐴
+[
+𝑘
+,
+𝑗
+]
+A[i,j]=A[i,j]−L[i,k]⋅A[k,j]
+After factorization:
 
----
+Forward substitution: 
+𝐿
+⋅
+𝑦
+=
+𝑃
+⋅
+𝑧
+𝑟
+𝑒
+𝑑
+L⋅y=P⋅z 
+red
+​
+ 
 
-## 🔮 Future Extensions
+Backward substitution: 
+𝑈
+⋅
+𝑥
+𝑟
+𝑒
+𝑑
+=
+𝑦
+U⋅x 
+red
+​
+ =y
 
-* 📈 **AC & Frequency Domain Analysis** (complex MNA)
-* ⏱ **Transient Analysis** (capacitors & inductors in time-domain)
-* 🔄 **Newton-Raphson Nonlinear Solver** for diodes/transistors
-* 💾 **Sparse Matrix Solver** for large-scale circuits
-* 🧾 **Symbolic Analysis** for exact formulas
+Complexity:
 
----
+𝑂
+(
+(
+𝑛
++
+𝑚
+)
+3
+)
+O((n+m) 
+3
+ ) worst-case for dense systems
 
-## 📥 Installation & Usage
+Reduced by ground removal
 
-```bash
-# Clone repo
-git clone https://github.com/yourusername/circuit-simulator.git
-cd circuit-simulator
+3. Residual & Accuracy Checks
+After solving:
 
-# Install dependencies (Node.js)
-npm install
+𝑟
+=
+∥
+𝐴
+𝑟
+𝑒
+𝑑
+𝑥
+𝑟
+𝑒
+𝑑
+−
+𝑧
+𝑟
+𝑒
+𝑑
+∥
+2
+r=∥A 
+red
+​
+ x 
+red
+​
+ −z 
+red
+​
+ ∥ 
+2
+​
+ 
+Goal: 
+𝑟
+≤
+10
+−
+10
+r≤10 
+−10
+ 
 
-# Run simulation
-node simulate.js
-```
+Large residual → possible ill-conditioning or singularity
 
----
+4. Condition Number Analysis
+The simulator computes:
 
-## 🧑‍💻 Code Highlights
+𝜅
+(
+𝐴
+)
+=
+∥
+𝐴
+∥
+⋅
+∥
+𝐴
+−
+1
+∥
+κ(A)=∥A∥⋅∥A 
+−1
+ ∥
+High 
+𝜅
+(
+𝐴
+)
+κ(A) → sensitive to rounding & component tolerances
 
-### 1️⃣ **Node Identification (Union-Find)**
+Helps detect unstable circuits before trusting results
 
-Efficiently groups electrically connected terminals:
+5. Error Handling
+Singular matrix detection → missing connections or floating subcircuits
 
-```javascript
-function Union(t1, t2) {
-    root1 = Find(t1);
-    root2 = Find(t2);
-    if (root1 !== root2) {
-        if (rank[root1] > rank[root2]) parent[root2] = root1;
-        else if (rank[root1] < rank[root2]) parent[root1] = root2;
-        else { parent[root2] = root1; rank[root1]++; }
-    }
-}
-```
+Ill-conditioning warnings → extreme resistor ratios (e.g., 
+1
+Ω
+1Ω with 
+1
+𝑀
+Ω
+1MΩ)
 
-### 2️⃣ **Matrix Assembly**
+🛠 Workflow
+mermaid
+Copy
+Edit
+graph TD;
+    A[Component & Wire Input] --> B[Node Identification (Union-Find)]
+    B --> C[MNA Matrix Assembly (G, B, I_s, V_s)]
+    C --> D[Ground Node Reduction]
+    D --> E[LU Decomposition & Solve]
+    E --> F[Post-Processing (Currents & Powers)]
+    F --> G[Verification (KCL, KVL, Power)]
+💡 Example Analysis — Voltage Divider
+Circuit:
 
-Example resistor contribution to **G**:
+Vs = 12 V
 
-```javascript
-G[i][i] += 1/R;
-G[j][j] += 1/R;
-G[i][j] -= 1/R;
-G[j][i] -= 1/R;
-```
+R1 = 1 kΩ
 
-### 3️⃣ **LU Solve**
+R2 = 2 kΩ
 
-```javascript
-const solution = math.lusolve(reducedA, reducedZ);
-```
+Results:
 
+Quantity	Value
+V₂	8 V
+I	4 mA
+P_R1	16 mW
+P_R2	32 mW
+P_Vs	-48 mW
 
-## 📜 License
+✅ KCL/KVL & Power Conservation verified.
 
-MIT License – use, modify, and share freely.
+✅ Verification & Validation
+KCL: Currents at every node sum to ≈ 0
+
+KVL: Loop voltages sum to ≈ 0
+
+Power: Total supplied = total consumed
+
+Residual Norm: Reports how close numerical solution is to exact
+
+Condition Number: Alerts on stability risk
