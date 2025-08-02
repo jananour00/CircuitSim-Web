@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Circuit Simulator</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Math.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <i class="fas fa-bolt logo-icon"></i>
+                <span class="logo-text">Advanced Circuit Simulator</span>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 12px;">
+                <button class="action-btn" id="newBtn">
+                    <i class="fas fa-file btn-icon"></i>
+                    New
+                </button>
+                <button class="action-btn" id="saveBtn">
+                    <i class="fas fa-save btn-icon"></i>
+                    Save
+                </button>
+                <button class="action-btn" id="loadBtn">
+                    <i class="fas fa-folder-open btn-icon"></i>
+                    Load
+                </button>
+                <button class="action-btn" id="showNodesBtn">
+                    <i class="fas fa-project-diagram btn-icon"></i>
+                    Show Nodes
+                </button>
+                <button class="action-btn" id="debugBtn">
+                    <i class="fas fa-bug btn-icon"></i>
+                    Debug
+                </button>
+                <button class="action-btn primary-btn" id="simulateBtn">
+                    <i class="fas fa-play btn-icon"></i>
+                    Simulate
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <i class="fas fa-microchip"></i>
+            <span id="componentCount">Components: 0</span>
+        </div>
+        <div class="status-item">
+            <i class="fas fa-code-branch"></i>
+            <span id="nodeCount">Nodes: 0</span>
+        </div>
+        <div class="status-item">
+            <i class="fas fa-bolt"></i>
+            <span id="simulationStatus">Ready</span>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3><i class="fas fa-toolbox"></i> Component Palette</h3>
+            <div class="component-palette">
+                <div class="palette-item" data-type="resistor">
+                    <div class="palette-icon">
+                        <!-- Resistor SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <rect x="10" y="20" width="30" height="10" fill="none" stroke="black" stroke-width="2"/>
+                            <line x1="5" y1="25" x2="10" y2="25" stroke="black" stroke-width="2"/>
+                            <line x1="40" y1="25" x2="45" y2="25" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Resistor</div>
+                </div>
+                <div class="palette-item" data-type="capacitor">
+                    <div class="palette-icon">
+                        <!-- Capacitor SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <line x1="5" y1="25" x2="20" y2="25" stroke="black" stroke-width="2"/>
+                            <line x1="20" y1="15" x2="20" y2="35" stroke="black" stroke-width="2"/>
+                            <line x1="30" y1="15" x2="30" y2="35" stroke="black" stroke-width="2"/>
+                            <line x1="30" y1="25" x2="45" y2="25" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Capacitor</div>
+                </div>
+                <div class="palette-item" data-type="inductor">
+                    <div class="palette-icon">
+                        <!-- Inductor SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <line x1="5" y1="25" x2="10" y2="25" stroke="black" stroke-width="2"/>
+                            <path d="M 10 25 Q 15 15, 20 25 T 30 25 T 40 25" fill="none" stroke="black" stroke-width="2"/>
+                            <line x1="40" y1="25" x2="45" y2="25" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Inductor</div>
+                </div>
+                <div class="palette-item" data-type="voltageSource">
+                    <div class="palette-icon">
+                        <!-- Voltage Source SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20" stroke="black" stroke-width="2" fill="none"/>
+                            <text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold">+</text>
+                            <text x="25" y="35" text-anchor="middle" font-size="16" font-weight="bold">-</text>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Voltage Source</div>
+                </div>
+                <div class="palette-item" data-type="currentSource">
+                    <div class="palette-icon">
+                        <!-- Current Source SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20" stroke="black" stroke-width="2" fill="none"/>
+                            <line x1="15" y1="25" x2="35" y2="25" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Current Source</div>
+                </div>
+                <div class="palette-item" data-type="ground">
+                    <div class="palette-icon">
+                        <!-- Ground SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <line x1="25" y1="15" x2="25" y2="30" stroke="black" stroke-width="2"/>
+                            <line x1="15" y1="30" x2="35" y2="30" stroke="black" stroke-width="2"/>
+                            <line x1="18" y1="35" x2="32" y2="35" stroke="black" stroke-width="2"/>
+                            <line x1="21" y1="40" x2="29" y2="40" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Ground</div>
+                </div>
+                <div class="palette-item" data-type="diode">
+                    <div class="palette-icon">
+                        <!-- Diode SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <line x1="5" y1="25" x2="20" y2="25" stroke="black" stroke-width="2"/>
+                            <polygon points="20,15 20,35 35,25" fill="black"/>
+                            <line x1="35" y1="15" x2="35" y2="35" stroke="black" stroke-width="2"/>
+                            <line x1="35" y1="25" x2="45" y2="25" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">Diode</div>
+                </div>
+                <div class="palette-item" data-type="led">
+                    <div class="palette-icon">
+                        <!-- LED SVG -->
+                        <svg class="component-svg" viewBox="0 0 50 50">
+                            <line x1="5" y1="25" x2="20" y2="25" stroke="black" stroke-width="2"/>
+                            <polygon points="20,15 20,35 35,25" fill="black"/>
+                            <line x1="35" y1="15" x2="35" y2="35" stroke="black" stroke-width="2"/>
+                            <line x1="35" y1="25" x2="45" y2="25" stroke="black" stroke-width="2"/>
+                            <!-- Light rays -->
+                            <line x1="25" y1="10" x2="25" y2="5" stroke="black" stroke-width="1.5"/>
+                            <line x1="30" y1="12" x2="34" y2="8" stroke="black" stroke-width="1.5"/>
+                            <line x1="20" y1="12" x2="16" y2="8" stroke="black" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="palette-label">LED</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Canvas Area -->
+        <div class="canvas-container">
+            <div class="canvas-scroll" id="canvasScroll">
+                <div class="circuit-grid" id="circuitGrid">
+                    <!-- Components will be placed here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Grid Controls -->
+            <div class="grid-controls">
+                <button class="grid-btn" id="zoomInBtn" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="grid-btn" id="zoomOutBtn" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="grid-btn active" id="snapToGridBtn" title="Snap to Grid">
+                    <i class="fas fa-magnet"></i>
+                </button>
+                <button class="grid-btn" id="deleteBtn" title="Delete Selected">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            
+            <!-- Zoom Indicator -->
+            <div class="zoom-indicator">
+                Zoom: <span id="zoomLevel">100%</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug Panel -->
+    <div class="debug-panel" id="debugPanel">
+        <h4>Debug Information</h4>
+        <pre id="debugContent"></pre>
+    </div>
+    
+    <!-- Simulation Results Modal -->
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Simulation Results</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>Node Voltages</h3>
+                <table class="results-table" id="nodeTable">
+                    <thead>
+                        <tr>
+                            <th>Node ID</th>
+                            <th>Voltage (V)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Node data will be inserted here -->
+                    </tbody>
+                </table>
+                
+                <h3 style="margin-top: 2rem;">Component Currents</h3>
+                <table class="results-table" id="componentTable">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Type</th>
+                            <th>Current (A)</th>
+                            <th>Power (W)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Component data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Property Editor -->
+    <div class="property-editor" id="propertyEditor" style="display: none;">
+        <h4>Component Properties</h4>
+        <div class="property-field">
+            <label for="propValue">Value</label>
+            <input type="text" id="propValue" placeholder="Enter value">
+        </div>
+        <div class="property-field">
+            <label for="propUnit">Unit</label>
+            <input type="text" id="propUnit" placeholder="e.g. V, Ω, F">
+        </div>
+        <div class="property-field">
+            <button id="applyProperties">Apply</button>
+        </div>
+    </div>
+    
+    <div class="love-footer">
+        Made with Love <span><i class="fas fa-heart"></i></span> by Janjon
+    </div>
+    <script src="script.js">
+       
+    </script>
+</body>
+</html>
