@@ -1,487 +1,197 @@
 
-Advanced Circuit Simulator
-A Rigorous, High-Precision DC Circuit Analysis Tool using Modified Nodal Analysis (MNA)
+# ⚡ Advanced Circuit Simulator
 
+*A Rigorous, High-Precision DC Circuit Analysis Tool using Modified Nodal Analysis (MNA)*
 
-🎥 Watch Demo Video (coming soon)
+![Circuit Simulation Demo](assets/20250802-1527-21.9009863.mp4)
 
-📌 Table of Contents
-Overview
+> 🎥 **[Watch Demo Video](#demo-video)** *(coming soon)*
 
-Key Features
+---
 
-Mathematical Foundations
+## 📌 Table of Contents
 
-Numerical Methods
+1. [Overview](#overview)
+2. [Key Features](#key-features)
+3. [Mathematical Foundations](#mathematical-foundations)
+4. [Numerical Methods](#numerical-methods)
+5. [Workflow](#workflow)
+6. [Example Analysis](#example-analysis)
+7. [Verification & Validation](#verification--validation)
+8. [Advanced Extensions](#advanced-extensions)
+9. [Future Roadmap](#future-roadmap)
+10. [Demo Video](#demo-video)
 
-Workflow
+---
 
-Example Analysis
+## 📖 Overview
 
-Verification & Validation
+The **Advanced Circuit Simulator** is designed to perform **accurate, stable, and verifiable DC circuit analysis** using **Modified Nodal Analysis (MNA)**.
+It’s not just a black-box solver — it’s an **educational and professional tool** that lets you:
 
-Advanced Extensions
+* See the **full equation system** your circuit produces
+* Understand **matrix assembly** from physical components
+* Verify your results against **KCL, KVL, and power conservation**
+* Extend to AC, nonlinear, and transient analyses
 
-Future Roadmap
+---
 
-Demo Video
+## 🚀 Key Features
 
-📖 Overview
-The Advanced Circuit Simulator is designed to perform accurate, stable, and verifiable DC circuit analysis using Modified Nodal Analysis (MNA).
-It’s not just a black-box solver — it’s an educational and professional tool that lets you:
+* 🔍 **Accurate MNA Implementation** for DC steady-state analysis
+* 📐 **Union-Find Node Detection** for correct topology mapping
+* ⚙️ **LU Decomposition with Partial Pivoting** for stable solving
+* 📊 **Post-Processing**: per-component currents & power
+* ✅ **Automatic Verification** of physical conservation laws
+* 📈 **Residual Norm & Condition Number** reporting
+* 🔄 **Ground Node Reduction** for efficiency
+* 🛠 **Educational Mode** showing intermediate matrices
 
-See the full equation system your circuit produces
+---
 
-Understand matrix assembly from physical components
+## 📚 Mathematical Foundations
 
-Verify your results against KCL, KVL, and power conservation
-
-Extend to AC, nonlinear, and transient analyses
-
-🚀 Key Features
-🔍 Accurate MNA Implementation for DC steady-state analysis
-
-📐 Union-Find Node Detection for correct topology mapping
-
-⚙️ LU Decomposition with Partial Pivoting for stable solving
-
-📊 Post-Processing: per-component currents & power
-
-✅ Automatic Verification of physical conservation laws
-
-📈 Residual Norm & Condition Number reporting
-
-🔄 Ground Node Reduction for efficiency
-
-🛠 Educational Mode showing intermediate matrices
-
-📚 Mathematical Foundations
-Problem Setup
+**Problem Setup**
 Given a circuit with:
 
-𝑛
-n non-ground nodes
+* $n$ non-ground nodes
+* $m$ voltage sources
 
-𝑚
-m voltage sources
+The **MNA formulation** is:
 
-The MNA formulation is:
-
-[
-𝐺
-𝐵
-𝐵
-𝑇
-0
-]
-[
-𝑉
-𝐼
-]
-=
-[
-𝐼
-𝑠
-𝑉
-𝑠
-]
-[ 
-G
-B 
-T
- 
-​
-  
-B
-0
-​
- ][ 
-V
+$$
+\begin{bmatrix}
+G & B \\
+B^T & 0
+\end{bmatrix}
+\begin{bmatrix}
+V \\
 I
-​
- ]=[ 
-I 
-s
-​
- 
-V 
-s
-​
- 
-​
- ]
+\end{bmatrix}
+=
+\begin{bmatrix}
+I_s \\
+V_s
+\end{bmatrix}
+$$
+
 Where:
 
-𝐺
-G: Conductance matrix (Ohm’s law contributions)
+* $G$: Conductance matrix (Ohm’s law contributions)
+* $B$: Voltage source incidence matrix
+* $I_s$: Current injection vector
+* $V_s$: Voltage source vector
 
-𝐵
-B: Voltage source incidence matrix
+**Dimension**: $(n+m) \times (n+m)$
 
-𝐼
-𝑠
-I 
-s
-​
- : Current injection vector
+---
 
-𝑉
-𝑠
-V 
-s
-​
- : Voltage source vector
+## 🔢 Numerical Methods
 
-Dimension: 
-(
-𝑛
-+
-𝑚
-)
-×
-(
-𝑛
-+
-𝑚
-)
-(n+m)×(n+m)
+The simulator is **numerically robust** thanks to careful preprocessing and solving strategies.
 
-🔢 Numerical Methods
-The simulator is numerically robust thanks to careful preprocessing and solving strategies.
+### **1. Ground Node Reduction**
 
-1. Ground Node Reduction
-We select one node as reference (ground) and remove its row and column from the MNA system.
+We select one node as **reference (ground)** and remove its row and column from the MNA system.
 
-Why?
+* **Why?**
 
-Ground voltage is fixed (
-𝑉
-𝑔
-=
-0
-V 
-g
-​
- =0) → no need to solve for it
+  * Ground voltage is fixed ($V_g = 0$) → no need to solve for it
+  * Reduces size from $(n+m)$ to $(n+m-1)$
+  * Improves **conditioning** by removing a trivial equation
 
-Reduces size from 
-(
-𝑛
-+
-𝑚
-)
-(n+m) to 
-(
-𝑛
-+
-𝑚
-−
-1
-)
-(n+m−1)
+---
 
-Improves conditioning by removing a trivial equation
+### **2. LU Decomposition with Partial Pivoting**
 
-2. LU Decomposition with Partial Pivoting
 We solve:
 
-𝐴
-𝑟
-𝑒
-𝑑
-⋅
-𝑥
-𝑟
-𝑒
-𝑑
-=
-𝑧
-𝑟
-𝑒
-𝑑
-A 
-red
-​
- ⋅x 
-red
-​
- =z 
-red
-​
- 
+$$
+A_{red} \cdot x_{red} = z_{red}
+$$
+
 Using the factorization:
 
-𝑃
-⋅
-𝐴
-𝑟
-𝑒
-𝑑
-=
-𝐿
-⋅
-𝑈
-P⋅A 
-red
-​
- =L⋅U
-𝐿
-L: Lower triangular (1’s on diagonal)
+$$
+P \cdot A_{red} = L \cdot U
+$$
 
-𝑈
-U: Upper triangular
+* $L$: Lower triangular (1’s on diagonal)
+* $U$: Upper triangular
+* $P$: Row permutation matrix (from pivoting)
 
-𝑃
-P: Row permutation matrix (from pivoting)
+**Partial Pivoting**:
 
-Partial Pivoting:
+* Finds the largest pivot element in the current column
+* Swaps rows to place it on the diagonal
+* Prevents division by small numbers
+* Reduces round-off error growth
 
-Finds the largest pivot element in the current column
+**Algorithm** (Doolittle with Pivoting):
 
-Swaps rows to place it on the diagonal
+1. For column $k$:
 
-Prevents division by small numbers
+   * $p = \arg\max_{i \ge k} |A[i,k]|$
+   * Swap rows $k$ and $p$ in $A$, update $P$
+   * For rows $i > k$:
 
-Reduces round-off error growth
+     $$
+     L[i,k] = \frac{A[i,k]}{A[k,k]}
+     $$
 
-Algorithm (Doolittle with Pivoting):
+     Update:
 
-For column 
-𝑘
-k:
+     $$
+     A[i,j] = A[i,j] - L[i,k] \cdot A[k,j]
+     $$
+2. After factorization:
 
-𝑝
-=
-arg
-⁡
-max
-⁡
-𝑖
-≥
-𝑘
-∣
-𝐴
-[
-𝑖
-,
-𝑘
-]
-∣
-p=argmax 
-i≥k
-​
- ∣A[i,k]∣
+   * **Forward substitution**: $L \cdot y = P \cdot z_{red}$
+   * **Backward substitution**: $U \cdot x_{red} = y$
 
-Swap rows 
-𝑘
-k and 
-𝑝
-p in 
-𝐴
-A, update 
-𝑃
-P
+**Complexity**:
 
-For rows 
-𝑖
->
-𝑘
-i>k:
+* $O((n+m)^3)$ worst-case for dense systems
+* Reduced by ground removal
 
-𝐿
-[
-𝑖
-,
-𝑘
-]
-=
-𝐴
-[
-𝑖
-,
-𝑘
-]
-𝐴
-[
-𝑘
-,
-𝑘
-]
-L[i,k]= 
-A[k,k]
-A[i,k]
-​
- 
-Update:
+---
 
-𝐴
-[
-𝑖
-,
-𝑗
-]
-=
-𝐴
-[
-𝑖
-,
-𝑗
-]
-−
-𝐿
-[
-𝑖
-,
-𝑘
-]
-⋅
-𝐴
-[
-𝑘
-,
-𝑗
-]
-A[i,j]=A[i,j]−L[i,k]⋅A[k,j]
-After factorization:
+### **3. Residual & Accuracy Checks**
 
-Forward substitution: 
-𝐿
-⋅
-𝑦
-=
-𝑃
-⋅
-𝑧
-𝑟
-𝑒
-𝑑
-L⋅y=P⋅z 
-red
-​
- 
-
-Backward substitution: 
-𝑈
-⋅
-𝑥
-𝑟
-𝑒
-𝑑
-=
-𝑦
-U⋅x 
-red
-​
- =y
-
-Complexity:
-
-𝑂
-(
-(
-𝑛
-+
-𝑚
-)
-3
-)
-O((n+m) 
-3
- ) worst-case for dense systems
-
-Reduced by ground removal
-
-3. Residual & Accuracy Checks
 After solving:
 
-𝑟
-=
-∥
-𝐴
-𝑟
-𝑒
-𝑑
-𝑥
-𝑟
-𝑒
-𝑑
-−
-𝑧
-𝑟
-𝑒
-𝑑
-∥
-2
-r=∥A 
-red
-​
- x 
-red
-​
- −z 
-red
-​
- ∥ 
-2
-​
- 
-Goal: 
-𝑟
-≤
-10
-−
-10
-r≤10 
-−10
- 
+$$
+r = \|A_{red} x_{red} - z_{red}\|_2
+$$
 
-Large residual → possible ill-conditioning or singularity
+* Goal: $r \leq 10^{-10}$
+* Large residual → possible ill-conditioning or singularity
 
-4. Condition Number Analysis
+---
+
+### **4. Condition Number Analysis**
+
 The simulator computes:
 
-𝜅
-(
-𝐴
-)
-=
-∥
-𝐴
-∥
-⋅
-∥
-𝐴
-−
-1
-∥
-κ(A)=∥A∥⋅∥A 
-−1
- ∥
-High 
-𝜅
-(
-𝐴
-)
-κ(A) → sensitive to rounding & component tolerances
+$$
+\kappa(A) = \|A\| \cdot \|A^{-1}\|
+$$
 
-Helps detect unstable circuits before trusting results
+* High $\kappa(A)$ → sensitive to rounding & component tolerances
+* Helps detect **unstable circuits** before trusting results
 
-5. Error Handling
-Singular matrix detection → missing connections or floating subcircuits
+---
 
-Ill-conditioning warnings → extreme resistor ratios (e.g., 
-1
-Ω
-1Ω with 
-1
-𝑀
-Ω
-1MΩ)
+### **5. Error Handling**
 
-🛠 Workflow
-mermaid
-Copy
-Edit
+* **Singular matrix detection** → missing connections or floating subcircuits
+* **Ill-conditioning warnings** → extreme resistor ratios (e.g., $1\Omega$ with $1M\Omega$)
+
+---
+
+## 🛠 Workflow
+
+```mermaid
 graph TD;
     A[Component & Wire Input] --> B[Node Identification (Union-Find)]
     B --> C[MNA Matrix Assembly (G, B, I_s, V_s)]
@@ -489,33 +199,69 @@ graph TD;
     D --> E[LU Decomposition & Solve]
     E --> F[Post-Processing (Currents & Powers)]
     F --> G[Verification (KCL, KVL, Power)]
-💡 Example Analysis — Voltage Divider
-Circuit:
+```
 
-Vs = 12 V
+---
 
-R1 = 1 kΩ
+## 💡 Example Analysis — Voltage Divider
 
-R2 = 2 kΩ
+**Circuit**:
 
-Results:
+* Vs = 12 V
+* R1 = 1 kΩ
+* R2 = 2 kΩ
 
-Quantity	Value
-V₂	8 V
-I	4 mA
-P_R1	16 mW
-P_R2	32 mW
-P_Vs	-48 mW
+**Results**:
 
-✅ KCL/KVL & Power Conservation verified.
+| Quantity | Value  |
+| -------- | ------ |
+| V₂       | 8 V    |
+| I        | 4 mA   |
+| P\_R1    | 16 mW  |
+| P\_R2    | 32 mW  |
+| P\_Vs    | -48 mW |
 
-✅ Verification & Validation
-KCL: Currents at every node sum to ≈ 0
+✅ **KCL/KVL & Power Conservation verified**.
 
-KVL: Loop voltages sum to ≈ 0
+---
 
-Power: Total supplied = total consumed
+## ✅ Verification & Validation
 
-Residual Norm: Reports how close numerical solution is to exact
+* **KCL**: Currents at every node sum to ≈ 0
+* **KVL**: Loop voltages sum to ≈ 0
+* **Power**: Total supplied = total consumed
+* **Residual Norm**: Reports how close numerical solution is to exact
+* **Condition Number**: Alerts on stability risk
 
-Condition Number: Alerts on stability risk
+---
+
+## 🔬 Advanced Extensions
+
+* 🌀 **AC Phasor Analysis**
+* 📉 **Nonlinear Components** with Newton-Raphson
+* 🎯 **Sensitivity & Monte Carlo** parameter analysis
+* ⚡ **Sparse Matrix Solver** for large-scale systems
+
+---
+
+## 🗺 Future Roadmap
+
+* [ ] Transient (time-domain) analysis
+* [ ] Complex AC solver
+* [ ] GUI circuit builder
+* [ ] WebAssembly performance boost
+
+---
+
+## 🎥 Demo Video
+
+📌 Coming soon: **matrix building, solving, and results visualized**
+👉 **[YouTube Placeholder Link](https://youtu.be/demo)**
+
+---
+
+## 📜 License
+
+MIT License — free to use, modify, and distribute.
+
+---
