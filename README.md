@@ -3,7 +3,7 @@
 
 *A Rigorous, High-Precision DC Circuit Analysis Tool using Modified Nodal Analysis (MNA)*
 
-[![Demo](assets/demo.gif)](assets/20250802-1527-21.9009863.mp4)
+![Demo](assets/20250802-1527-21.9009863.mp4)
 
 ---
 
@@ -263,5 +263,6 @@ graph TD;
 MIT License — free to use, modify, and distribute.
 
 ---
+
 
 
