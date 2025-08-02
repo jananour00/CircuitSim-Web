@@ -18,7 +18,6 @@
 7. [Verification & Validation](#verification--validation)
 8. [Advanced Extensions](#advanced-extensions)
 9. [Future Roadmap](#future-roadmap)
-10. [Demo Video](#demo-video)
 
 ---
 
@@ -180,13 +179,6 @@ $$
 
 ---
 
-### **5. Error Handling**
-
-* **Singular matrix detection** → missing connections or floating subcircuits
-* **Ill-conditioning warnings** → extreme resistor ratios (e.g., $1\Omega$ with $1M\Omega$)
-
----
-
 ## 🛠 Workflow
 
 ```mermaid
@@ -242,27 +234,12 @@ graph TD;
 
 ---
 
-## 🗺 Future Roadmap
-
-* [ ] Transient (time-domain) analysis
-* [ ] Complex AC solver
-* [ ] GUI circuit builder
-* [ ] WebAssembly performance boost
-
----
-
-## 🎥 Demo Video
-
-📌 Coming soon: **matrix building, solving, and results visualized**
-👉 **[YouTube Placeholder Link](https://youtu.be/demo)**
-
----
-
 ## 📜 License
 
 MIT License — free to use, modify, and distribute.
 
 ---
+
 
 
 
