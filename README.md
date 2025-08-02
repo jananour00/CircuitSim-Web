@@ -3,7 +3,7 @@
 
 *A Rigorous, High-Precision DC Circuit Analysis Tool using Modified Nodal Analysis (MNA)*
 
-![Demo](https://raw.githubusercontent.com/jananour00/CircuitSim-Web/main/20250802-1527-21.9009863%20(1).gif)
+![Demo](20250802-1527-21.9009863%20(1).gif)
 
 ---
 
@@ -263,6 +263,7 @@ graph TD;
 MIT License — free to use, modify, and distribute.
 
 ---
+
 
 
 
